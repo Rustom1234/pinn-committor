@@ -1,4 +1,4 @@
-"""Run 4: Temperature sweep — how does PINN accuracy vary with β (inverse temperature)?
+"""Run 4: Temperature sweep: how does PINN accuracy vary with β (inverse temperature)?
 Higher β = higher barrier relative to kT = harder problem."""
 import os, json, numpy as np, torch, sys, time
 sys.path.insert(0, os.path.dirname(__file__))
@@ -36,7 +36,7 @@ fig, ax = plt.subplots(figsize=(7,4))
 betas = sorted(results.keys())
 ax.plot(betas, [results[b]["mae"] for b in betas], "o-", lw=2, color="tomato")
 ax.set_xlabel("β (inverse temperature, mol/kcal)"); ax.set_ylabel("Committor MAE")
-ax.set_title("PINN Accuracy vs. Temperature — Double-Well"); ax.grid(alpha=0.3)
+ax.set_title("PINN Accuracy vs. Temperature: Double-Well"); ax.grid(alpha=0.3)
 plt.tight_layout(); plt.savefig(os.path.join(FIGURES,"beta_sweep.png"),dpi=150); plt.close()
 
 with open(os.path.join(RESULTS,"beta_sweep.json"),"w") as f:

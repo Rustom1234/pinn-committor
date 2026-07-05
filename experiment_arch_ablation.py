@@ -1,4 +1,4 @@
-"""Run 3: Architecture ablation — width and depth on double-well."""
+"""Run 3: Architecture ablation (width and depth on double-well)."""
 import os, json, numpy as np, torch, sys, time
 sys.path.insert(0, os.path.dirname(__file__))
 from experiment import train_pinn, evaluate, mc_committor, dw_grad, dw_A, dw_B, DEVICE, RESULTS, FIGURES
@@ -51,7 +51,7 @@ for depth in [2,3,4,6]:
     maes = [results[f"d{depth}_h{h}"]["mae"] for h in hs]
     ax.plot(hs, maes, "o-", label=f"depth={depth}")
 ax.set_xlabel("Hidden width"); ax.set_ylabel("Committor MAE")
-ax.set_title("PINN Architecture Ablation — Double-Well"); ax.legend(); ax.grid(alpha=0.3)
+ax.set_title("PINN Architecture Ablation: Double-Well"); ax.legend(); ax.grid(alpha=0.3)
 plt.tight_layout(); plt.savefig(os.path.join(FIGURES,"arch_ablation.png"),dpi=150); plt.close()
 
 with open(os.path.join(RESULTS,"arch_ablation.json"),"w") as f: json.dump(results,f,indent=2)

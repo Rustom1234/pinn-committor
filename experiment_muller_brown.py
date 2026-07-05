@@ -1,4 +1,4 @@
-"""Run 5: Müller-Brown potential — third benchmark system, more complex landscape."""
+"""Run 5: Müller-Brown potential (third benchmark system, more complex landscape)."""
 import os, json, numpy as np, torch, sys, time
 sys.path.insert(0, os.path.dirname(__file__))
 from experiment import MLP, ResNet, train_pinn, train_flow, evaluate, mc_committor, DEVICE, RESULTS, FIGURES

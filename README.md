@@ -10,7 +10,7 @@ approximation and the published experimental rate.
 
 ## 1. Motivation
 
-Residence time — how long a drug stays bound to its target — is one of the
+Residence time (how long a drug stays bound to its target) is one of the
 numbers pharmaceutical researchers care about most when optimizing a
 candidate molecule; a longer residence time often correlates with better
 in-vivo efficacy, independent of binding affinity alone. Residence time is
@@ -31,7 +31,7 @@ simulating the rare event itself.
 The central object of transition-path theory is the **committor**, q(x):
 the probability that, starting from configuration x, the system reaches the
 unbound state before it returns to the bound state. If q(x) is known
-everywhere in configuration space, k_off can be computed directly from it —
+everywhere in configuration space, k_off can be computed directly from it:
 no brute-force sampling of an actual unbinding trajectory is required.
 
 The committor satisfies the **backward Kolmogorov equation**:
@@ -44,16 +44,16 @@ where V is the potential energy surface and β is the inverse temperature.
 This is a linear second-order PDE with boundary conditions q = 0 in the
 bound basin and q = 1 in the unbound basin.
 
-### Method 1 — PINN (PDE-residual loss)
+### Method 1: PINN (PDE-residual loss)
 
 The PINN is trained by minimizing the residual of the backward Kolmogorov
 equation directly, evaluated at collocation points across the domain
 (`pinn_loss` in `experiment.py`), plus a `w_bc`-weighted boundary term that
 pins q to 0 and 1 in the bound and unbound basins respectively. The physics
-supplies the supervisory signal everywhere data is scarce — no simulated
+supplies the supervisory signal everywhere data is scarce: no simulated
 transition paths are needed as training data.
 
-### Method 2 — Flow-matching (Dirichlet-energy loss)
+### Method 2: Flow-matching (Dirichlet-energy loss)
 
 The second approach replaces the PDE-residual with its variational
 equivalent: minimizing the Dirichlet energy
@@ -71,10 +71,10 @@ transports bound-distributed configurations to unbound-distributed ones.
 
 ### Test systems
 
-1. **2D double-well** — a synthetic toy potential with a known analytical
+1. **2D double-well**: a synthetic toy potential with a known analytical
    committor, used to validate that both methods learn the correct field
    before trusting them on a real system.
-2. **Trypsin–benzamidine** — a real, experimentally characterized
+2. **Trypsin–benzamidine**: a real, experimentally characterized
    protein-ligand system, reduced to two coordinates (r = ligand-pocket
    distance, θ = binding angle), with the potential calibrated against the
    published free-energy profile of Buch et al. (PNAS 2011). The resulting
@@ -82,7 +82,7 @@ transports bound-distributed configurations to unbound-distributed ones.
 
 ## 3. Results
 
-### System A — 2D double-well (validation against Monte Carlo ground truth)
+### System A: 2D double-well (validation against Monte Carlo ground truth)
 
 | Model           | MAE    | RMSE   |
 |-----------------|--------|--------|
@@ -95,7 +95,7 @@ Monte Carlo ground truth, essentially indistinguishable from each other. The
 flow-matching model is close but consistently a bit worse (MAE 0.0228 vs.
 0.0145).
 
-### System B — Trypsin-benzamidine
+### System B: Trypsin-benzamidine
 
 **Unbinding rate k_off (s⁻¹):**
 
@@ -125,12 +125,12 @@ when the underlying dynamics are simple and well-resolved.
 **What doesn't (yet):** On the real trypsin-benzamidine system, the learned
 committors translate into rate estimates that are far from the experimental
 value of 600 s⁻¹. The PINN estimate (18 s⁻¹) is off by roughly 33x, and the
-flow-matching estimate (6.5 s⁻¹) is off by roughly 92x — both undershoot
+flow-matching estimate (6.5 s⁻¹) is off by roughly 92x, and both undershoot
 substantially, landing in the ~25-100x-off range.
 
 **Stated plainly: the classical Kramers approximation (450 s⁻¹) lands
 closer to the experimental rate than either learned method.** This is not a
-result we want to bury — it is the central finding of the real-system
+result we want to bury: it is the central finding of the real-system
 experiment and the reason this section exists.
 
 That said, "far from Kramers" is not the same as "far from the truth."
@@ -138,7 +138,7 @@ Kramers itself is a local-curvature approximation, and a code-level note in
 `experiment.py` documents that it can overestimate k_off by roughly 3x for
 a flat-unbound potential shape like the one used here. So while Kramers is
 numerically the closest of the three methods to the experimental value in
-this run, it is not necessarily the more trustworthy model in general — it
+this run, it is not necessarily the more trustworthy model in general: it
 may simply be getting the right answer partly by chance, or the 2D
 reduction may be flattering it in a way it isn't flattering the learned
 committors.
@@ -152,8 +152,8 @@ Candid hypotheses for the gap between the learned methods and experiment:
 - **The transition-state region may be undersampled during training.**
   Rare-event committors are most sensitive exactly where q is near 0.5, and
   if collocation/training points don't adequately cover that narrow region,
-  the resulting rate estimate — which depends on gradients of q near the
-  transition state — can be systematically biased.
+  the resulting rate estimate (which depends on gradients of q near the
+  transition state) can be systematically biased.
 - **Kramers' own reliability is in question for this potential shape**, per
   the ~3x-overestimation note above, so a large discrepancy between the
   learned methods and Kramers should not be read as a large discrepancy
@@ -162,7 +162,7 @@ Candid hypotheses for the gap between the learned methods and experiment:
 We report this gap directly, with numbers, rather than tuning the write-up
 to obscure it, because a credible research artifact is one that shows where
 a method validates cleanly (the double well) and where it currently falls
-short (the real system) — not one that only shows the flattering half.
+short (the real system), not one that only shows the flattering half.
 
 ## 5. Figures
 

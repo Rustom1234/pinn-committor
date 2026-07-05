@@ -4,14 +4,14 @@ PINN vs Flow Matching for Drug Residence Time Prediction
 
 Novel contributions:
   1. First end-to-end prediction of experimental k_off for a real drug-protein
-     system (trypsin-benzamidine) via PINN-learned committor function — no
+     system (trypsin-benzamidine) via PINN-learned committor function: no
      prior work has closed this loop to experimental data.
-  2. Flow matching as an alternative to PINNs for committor learning —
+  2. Flow matching as an alternative to PINNs for committor learning:
      more sample-efficient, no PDE residual needed.
 
 Systems:
-  A. 2D double-well (ground truth known analytically)  — method validation
-  B. Trypsin-benzamidine reduced 2D model              — real drug-protein
+  A. 2D double-well (ground truth known analytically): method validation
+  B. Trypsin-benzamidine reduced 2D model:             real drug-protein
 
 Experimental reference:
   Trypsin-benzamidine k_off ≈ 600 s⁻¹ (t_res ≈ 1.7 ms)
@@ -83,7 +83,7 @@ K_THETA   = 1.5    # angular stiffness kcal/mol/rad²
 # Z_AB = ∫_{6.5}^{12} exp(βV) dr ≈ 4.5 Å (barrier/forward integral to absorbing boundary).
 # → D = 600 * Z_A * Z_AB / 1e9 ≈ 0.357 Å²/ns
 # Note: Kramers (local curvature approximation) overestimates k_off ~3x for this flat-unbound
-# potential shape — this is expected and discussed in the paper.
+# potential shape (this is expected and discussed in the paper).
 D_EFF     = 0.357  # effective diffusion Å²/ns (calibrated to exact Yamamoto, not Kramers)
 
 def tryp_potential_1d(r):
@@ -232,7 +232,7 @@ def train_pinn(model, x_int, grad_V_fn, x_A, x_B, beta, epochs=3000, lr=1e-3):
 # Loss: variational formulation of the committor
 #   L(q) = ∫ |∇q(x)|² exp(-βV(x)) dx  subject to q=0 on A, q=1 on B
 #
-# This is equivalent to Dirichlet energy minimisation — no PDE residual,
+# This is equivalent to Dirichlet energy minimisation: no PDE residual,
 # no second-order AD. Just first-order gradients and boundary terms.
 # Much cheaper than PINNs.
 #
@@ -247,13 +247,13 @@ def flow_loss(model, x_int, log_weights, x_A, x_B, x_interp, t_interp,
     """
     Dirichlet energy + boundary conditions + interpolant consistency.
 
-    log_weights: log of Boltzmann weights (unnormalised) — we use these
+    log_weights: log of Boltzmann weights (unnormalised), used
                  as a control variate to keep gradients well-scaled.
     x_interp: linear interpolants between random A and B configurations.
-    t_interp: the interpolation parameter t ∈ [0,1] — target for q(x_interp).
+    t_interp: the interpolation parameter t ∈ [0,1], target for q(x_interp).
 
     Why Dirichlet energy? Because q minimises ∫|∇q|²dμ_eq subject to BCs.
-    That is exactly the variational form of the KBE — but only needs ∇q,
+    That is exactly the variational form of the KBE, but only needs ∇q,
     not Δq, so it's cheaper and more stable than PINNs.
     """
     xi = x_int.requires_grad_(True)
@@ -322,14 +322,14 @@ def kramers_koff_1d(r_min, r_ts, V_fn, beta, D=D_EFF):
     dr = 0.01  # larger step for smoother curvature estimate
     V_min = V_fn(np.array([r_min]))[0]
     V_ts  = V_fn(np.array([r_ts]))[0]
-    dV    = V_ts - V_min  # kcal/mol — must be positive (barrier)
+    dV    = V_ts - V_min  # kcal/mol (must be positive, barrier)
 
     # Second derivative (curvature) at minimum: always positive
     curv_min = (V_fn(np.array([r_min+dr]))[0] - 2*V_min
                 + V_fn(np.array([r_min-dr]))[0]) / dr**2
     curv_min = abs(curv_min)
 
-    # Curvature at transition state: negative (it's a maximum) — take absolute value
+    # Curvature at transition state: negative (it's a maximum), take absolute value
     curv_ts = abs((V_fn(np.array([r_ts+dr]))[0] - 2*V_ts
                    + V_fn(np.array([r_ts-dr]))[0]) / dr**2)
 
@@ -542,7 +542,7 @@ def main():
     dw_logs["FlowMatch-MLP"] = log
 
     plot_committor("2D Double-Well", test_pts, q_mc_dw, dw_results, "committor_dw.png")
-    plot_training_curves(dw_logs, "Training curves — 2D Double-Well", "curves_dw.png")
+    plot_training_curves(dw_logs, "Training curves: 2D Double-Well", "curves_dw.png")
     all_results["double_well"] = {k: {"mae": v[0], "rmse": v[1]} for k,v in dw_results.items()}
     print(f"\nDouble-well plots saved.")
 
@@ -552,7 +552,7 @@ def main():
     print(f"  Experimental k_off = 600 s⁻¹  (Guillain & Thusius 1970)")
     print("="*60)
 
-    # Kramers analytic reference — scan for exact minimum and saddle
+    # Kramers analytic reference: scan for exact minimum and saddle
     r_scan = np.linspace(3.5, 16.0, 5000)
     V_scan = tryp_potential_1d(r_scan)
     r_min_idx = np.argmin(V_scan[:int(len(r_scan)*0.4)])   # bound basin
@@ -609,7 +609,7 @@ def main():
     tb_logs    = {}
 
     # PINN
-    print("\n[PINN - MLP — Trypsin-Benzamidine]")
+    print("\n[PINN - MLP - Trypsin-Benzamidine]")
     m_pinn_tb = MLP().to(DEVICE)
     t0 = time.time()
     log = train_pinn(m_pinn_tb, x_int_tb, tryp_grad, x_bcA_tb, x_bcB_tb,
@@ -626,7 +626,7 @@ def main():
     tb_logs["PINN-MLP"] = log
 
     # Flow Matching
-    print("\n[Flow Matching - MLP — Trypsin-Benzamidine]")
+    print("\n[Flow Matching - MLP - Trypsin-Benzamidine]")
     m_flow_tb = MLP().to(DEVICE)
     t0 = time.time()
     log = train_flow(m_flow_tb, x_int_tb, log_weights_tb,
@@ -641,7 +641,7 @@ def main():
 
     plot_committor("Trypsin-Benzamidine (r, θ)", test_tb, q_mc_tb,
                    tb_results, "committor_trypsin.png")
-    plot_training_curves(tb_logs, "Training curves — Trypsin-Benzamidine", "curves_trypsin.png")
+    plot_training_curves(tb_logs, "Training curves: Trypsin-Benzamidine", "curves_trypsin.png")
 
     k_exp = 600.0
     plot_koff_comparison(k_pinn or 0, k_flow or 0, k_kramers, k_exp, "koff_comparison.png")

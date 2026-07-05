@@ -1,5 +1,5 @@
 #!/bin/bash
-# Overnight research loop — runs nohup, survives terminal disconnect.
+# Overnight research loop: runs nohup, survives terminal disconnect.
 # Runs the PINN/flow-matching experiment across 5 system variants,
 # logs everything, saves results.
 #
@@ -24,7 +24,7 @@ echo "======================================" | tee -a "$LOG"
 
 # --- Run 1: Current experiment (PINN + Flow on double-well + trypsin) ---
 echo "" | tee -a "$LOG"
-echo "[Run 1/5] PINN vs Flow Matching — double-well + trypsin-benzamidine" | tee -a "$LOG"
+echo "[Run 1/5] PINN vs Flow Matching: double-well + trypsin-benzamidine" | tee -a "$LOG"
 $CONDA_PYTHON experiment.py 2>&1 | tee -a "$LOG"
 echo "[Run 1 done: $(date)]" | tee -a "$LOG"
 
